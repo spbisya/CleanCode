@@ -17,7 +17,7 @@ import okunev.com.cleancode.models.CustomModel;
 
 public class DBHelper extends SQLiteOpenHelper {
     //Achievements
-    public static final String DATABASE_NAME = "DB_NAME";
+    public static final String DATABASE_NAME = "DB_NAME.db";
     public static final String MODEL_TABLE_NAME = "TABLE_NAME";
     public static final String MODEL_COLUMN_ID = "id";
     public static final String MODEL_COLUMN_NAME = "name";
@@ -76,6 +76,27 @@ public class DBHelper extends SQLiteOpenHelper {
             res.moveToNext();
         }
         return array_list;
+    }
+
+    public ArrayList<CustomModel> getModelsByQuery(String name) {
+        ArrayList<CustomModel> models = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + MODEL_TABLE_NAME, null);
+        res.moveToFirst();
+
+        while (!res.isAfterLast()) {
+            CustomModel customModel = new CustomModel();
+            customModel.setName(res.getString(res.getColumnIndex(MODEL_COLUMN_NAME)));
+            customModel.setDescription(res.getString(res.getColumnIndex(MODEL_COLUMN_DESCRIPTION)));
+            customModel.setLink(res.getString(res.getColumnIndex(MODEL_COLUMN_LINK)));
+            if (customModel.getName().contains(name) ||
+                    customModel.getDescription().contains(name) ||
+                    customModel.getLink().contains(name))
+                models.add(customModel);
+            res.moveToNext();
+        }
+        return models;
     }
 
     public Integer deleteModel(Integer id) {

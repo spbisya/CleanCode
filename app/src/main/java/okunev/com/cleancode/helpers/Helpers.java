@@ -1,12 +1,15 @@
 package okunev.com.cleancode.helpers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -59,6 +62,28 @@ public class Helpers {
         Point size = new Point();
         display.getSize(size);
         return size.x;
+    }
+
+    private static int getNumOfColumns(Context context, GridView gridView) {
+        android.widget.ListAdapter gridViewAdapter = gridView.getAdapter();
+        if (gridViewAdapter == null) {
+            // pre-condition
+            return 0;
+        }
+        int totalWidth;
+        int columns;
+        try {
+            View listItem = gridViewAdapter.getView(0, null, gridView);
+            listItem.measure(0, 0);
+            totalWidth = listItem.getMeasuredWidth();
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int width = displaymetrics.widthPixels;
+            columns = width / totalWidth;
+        } catch (Exception l) {
+            columns = 3;
+        }
+        return columns;
     }
 
 }
